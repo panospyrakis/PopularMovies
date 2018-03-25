@@ -11,10 +11,11 @@
     <string name="sortByPopular">popular</string>
     <string name="sortByTopRated">top_rated</string>
     <string name="loading">Loading</string>
-    <string name="wait">Wait while loading...</string>
+    <string name="wait">Wait while loading…</string>
     <string name="placeholder">This is a test</string>
     <string name="duration">%1$d min</string>
     <string name="vote_average">%1$s /10</string>
     <string name="details">Movie Details</string>
+    <string name="desc">poster</string>
 
 </resources>

@@ -18,8 +18,8 @@ import com.udacity.spyrakis.popularmovies.models.Movie;
 import java.util.ArrayList;
 
 
-/**
- * Created by ounoufrios on 24/3/18.
+/*
+  Created by ounoufrios on 24/3/18.
  */
 
 

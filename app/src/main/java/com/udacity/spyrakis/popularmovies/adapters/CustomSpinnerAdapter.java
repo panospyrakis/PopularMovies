@@ -13,8 +13,8 @@ import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-/**
- * Created by ounoufrios on 22/3/18.
+/*
+  Created by ounoufrios on 22/3/18.
  */
 
 public class CustomSpinnerAdapter extends ArrayAdapter<String> implements ThemedSpinnerAdapter {

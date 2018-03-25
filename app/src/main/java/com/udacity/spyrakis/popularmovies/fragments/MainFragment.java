@@ -1,7 +1,7 @@
 package com.udacity.spyrakis.popularmovies.fragments;
 
-/**
- * Created by ounoufrios on 22/3/18.
+/*
+  Created by ounoufrios on 22/3/18.
  */
 
 import android.os.Bundle;
