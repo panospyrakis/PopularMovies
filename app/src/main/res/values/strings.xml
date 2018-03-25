@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PopularMovies</string>
+    <string name="main_activity_name">PopularMovies</string>
+    <string name="icons_base_url">http://image.tmdb.org/t/p/</string>
+    <string name="icon_size_suggested">w185</string>
+    <string name="api_key">{YOUR_POPULAR_MOVIE_API_KEY_HERE}</string>
+    <string name="base_url">https://api.themoviedb.org/3/</string>
+    <string name="popular">Popular</string>
+    <string name="topRated">Top Rated</string>
+    <string name="sortByPopular">popular</string>
+    <string name="sortByTopRated">top_rated</string>
+</resources>
