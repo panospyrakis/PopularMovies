@@ -4,6 +4,7 @@ package com.udacity.spyrakis.popularmovies.fragments;
   Created by ounoufrios on 22/3/18.
  */
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -13,8 +14,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.udacity.spyrakis.popularmovies.R;
+import com.udacity.spyrakis.popularmovies.activities.DetailsActivity;
+import com.udacity.spyrakis.popularmovies.activities.MainActivity;
 import com.udacity.spyrakis.popularmovies.adapters.ListAdapter;
 import com.udacity.spyrakis.popularmovies.models.MovieList;
+import com.udacity.spyrakis.popularmovies.services.OnItemClickListener;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -50,7 +54,7 @@ public class MainFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         ButterKnife.bind(this, rootView);
@@ -60,7 +64,15 @@ public class MainFragment extends Fragment {
             GridLayoutManager layoutManager = new GridLayoutManager(getActivity(), 2);
             listView.setLayoutManager(layoutManager);
 
-            ListAdapter adapter = new ListAdapter(listToDisplay.getResults(), getContext());
+            OnItemClickListener listener = new OnItemClickListener() {
+                @Override
+                public void onItemClick(int movieId) {
+                    Intent detailsIntent = new Intent(getActivity(), DetailsActivity.class);
+                    detailsIntent.putExtra(MainActivity.EXTRA_MOVIE_ID, movieId); //Optional parameters
+                    getContext().startActivity(detailsIntent);
+                }
+            };
+            ListAdapter adapter = new ListAdapter(listToDisplay.getResults(), getContext(), listener);
             listView.setAdapter(adapter);
         }
         return rootView;

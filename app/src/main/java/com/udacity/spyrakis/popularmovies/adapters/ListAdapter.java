@@ -1,7 +1,6 @@
 package com.udacity.spyrakis.popularmovies.adapters;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,9 +10,8 @@ import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 import com.udacity.spyrakis.popularmovies.R;
-import com.udacity.spyrakis.popularmovies.activities.DetailsActivity;
-import com.udacity.spyrakis.popularmovies.activities.MainActivity;
 import com.udacity.spyrakis.popularmovies.models.Movie;
+import com.udacity.spyrakis.popularmovies.services.OnItemClickListener;
 
 import java.util.ArrayList;
 
@@ -26,6 +24,7 @@ import java.util.ArrayList;
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
     private ArrayList<Movie> movies;
     private Context context;
+    private OnItemClickListener listener;
     ViewHolder vh;
 
     // Provide a reference to the views for each data item
@@ -41,21 +40,22 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
             super(v);
             image = v.findViewById(R.id.movieImg);
 
+        }
+
+        public void bind(final int movieId, final OnItemClickListener listener) {
             image.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent detailsIntent = new Intent(v.getContext(), DetailsActivity.class);
-                    detailsIntent.putExtra(MainActivity.EXTRA_MOVIE_ID, movie.getId()); //Optional parameters
-                    v.getContext().startActivity(detailsIntent);
+                @Override public void onClick(View v) {
+                    listener.onItemClick(movieId);
                 }
             });
         }
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public ListAdapter(ArrayList<Movie> movies, Context context) {
+    public ListAdapter(ArrayList<Movie> movies, Context context, OnItemClickListener listener) {
         this.movies = movies;
         this.context = context;
+        this.listener = listener;
     }
 
     // Create new views (invoked by the layout manager)
@@ -78,8 +78,10 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
         // - replace the contents of the view with that element
         String imagePath = context.getString(R.string.icons_base_url) + context.getString(R.string.icon_size_suggested) + movies.get(position).getPosterPath();
 
-        holder.movie =  movies.get(position);
+        holder.movie = movies.get(position);
         Picasso.with(context).load(imagePath).placeholder(R.drawable.placeholder).into(holder.image);
+
+        holder.bind(movies.get(position).getId(), listener);
     }
 
     // Return the size of your dataset (invoked by the layout manager)
