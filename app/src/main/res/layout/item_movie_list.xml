@@ -3,8 +3,11 @@
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="wrap_content">
     <ImageView
+        android:background="?attr/selectableItemBackgroundBorderless"
         android:id="@+id/movieImg"
         android:adjustViewBounds="true"
+        android:focusable="true"
+        android:clickable="true"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 

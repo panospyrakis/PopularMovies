@@ -56,13 +56,13 @@ public class MainFragment extends Fragment {
         ButterKnife.bind(this, rootView);
         MovieList listToDisplay = getArguments().getParcelable(ARG_MOVIE_LIST);
 
-        GridLayoutManager layoutManager = new GridLayoutManager(getActivity(),2);
-        listView.setLayoutManager(layoutManager);
+        if(listToDisplay != null) {
+            GridLayoutManager layoutManager = new GridLayoutManager(getActivity(), 2);
+            listView.setLayoutManager(layoutManager);
 
-        ListAdapter adapter = new ListAdapter(listToDisplay.getResults(),getContext());
-        listView.setAdapter(adapter);
-
-        rootView.invalidate();
+            ListAdapter adapter = new ListAdapter(listToDisplay.getResults(), getContext());
+            listView.setAdapter(adapter);
+        }
         return rootView;
     }
 }

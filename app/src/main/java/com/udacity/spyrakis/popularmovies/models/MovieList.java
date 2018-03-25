@@ -3,9 +3,8 @@ package com.udacity.spyrakis.popularmovies.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
+
 import com.google.gson.annotations.SerializedName;
 
 public class MovieList implements Parcelable {
@@ -17,7 +16,7 @@ public class MovieList implements Parcelable {
 	private int totalPages;
 
 	@SerializedName("results")
-	private ArrayList<ResultsItem> movieList;
+	private ArrayList<Movie> movieList;
 
 	@SerializedName("total_results")
 	private int totalResults;
@@ -38,11 +37,11 @@ public class MovieList implements Parcelable {
 		return totalPages;
 	}
 
-	public void setResults(ArrayList<ResultsItem> movieList){
+	public void setResults(ArrayList<Movie> movieList){
 		this.movieList = movieList;
 	}
 
-	public ArrayList<ResultsItem> getResults(){
+	public ArrayList<Movie> getResults(){
 		return movieList;
 	}
 
@@ -84,7 +83,7 @@ public class MovieList implements Parcelable {
 	protected MovieList(Parcel in) {
 		this.page = in.readInt();
 		this.totalPages = in.readInt();
-		this.movieList = in.createTypedArrayList(ResultsItem.CREATOR);
+		this.movieList = in.createTypedArrayList(Movie.CREATOR);
 		this.totalResults = in.readInt();
 	}
 

@@ -3,12 +3,12 @@ package com.udacity.spyrakis.popularmovies.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.gson.annotations.SerializedName;
-
-public class ResultsItem implements Parcelable {
+public class Movie implements Parcelable {
 
 	@SerializedName("overview")
 	private String overview;
@@ -167,7 +167,7 @@ public class ResultsItem implements Parcelable {
 	@Override
  	public String toString(){
 		return 
-			"ResultsItem{" + 
+			"Movie{" +
 			"overview = '" + overview + '\'' + 
 			",original_language = '" + originalLanguage + '\'' + 
 			",original_title = '" + originalTitle + '\'' + 
@@ -208,10 +208,10 @@ public class ResultsItem implements Parcelable {
 		dest.writeInt(this.voteCount);
 	}
 
-	public ResultsItem() {
+	public Movie() {
 	}
 
-	protected ResultsItem(Parcel in) {
+	protected Movie(Parcel in) {
 		this.overview = in.readString();
 		this.originalLanguage = in.readString();
 		this.originalTitle = in.readString();
@@ -229,15 +229,15 @@ public class ResultsItem implements Parcelable {
 		this.voteCount = in.readInt();
 	}
 
-	public static final Parcelable.Creator<ResultsItem> CREATOR = new Parcelable.Creator<ResultsItem>() {
+	public static final Parcelable.Creator<Movie> CREATOR = new Parcelable.Creator<Movie>() {
 		@Override
-		public ResultsItem createFromParcel(Parcel source) {
-			return new ResultsItem(source);
+		public Movie createFromParcel(Parcel source) {
+			return new Movie(source);
 		}
 
 		@Override
-		public ResultsItem[] newArray(int size) {
-			return new ResultsItem[size];
+		public Movie[] newArray(int size) {
+			return new Movie[size];
 		}
 	};
 }

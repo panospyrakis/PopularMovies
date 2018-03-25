@@ -1,16 +1,20 @@
 package com.udacity.spyrakis.popularmovies.activities;
 
 import android.app.ProgressDialog;
+import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-
-import android.os.Bundle;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Spinner;
+
+import com.udacity.spyrakis.popularmovies.R;
+import com.udacity.spyrakis.popularmovies.adapters.CustomSpinnerAdapter;
+import com.udacity.spyrakis.popularmovies.fragments.MainFragment;
+import com.udacity.spyrakis.popularmovies.models.MovieList;
+import com.udacity.spyrakis.popularmovies.services.PopularMoviesService;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -22,14 +26,10 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-import com.udacity.spyrakis.popularmovies.R;
-import com.udacity.spyrakis.popularmovies.adapters.CustomSpinnerAdapter;
-import com.udacity.spyrakis.popularmovies.fragments.MainFragment;
-import com.udacity.spyrakis.popularmovies.models.MovieList;
-import com.udacity.spyrakis.popularmovies.services.PopularMoviesService;
-
 
 public class MainActivity extends AppCompatActivity {
+
+    public static final String EXTRA_MOVIE_ID = "EXTRA_MOVIE_ID";
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -62,8 +62,8 @@ public class MainActivity extends AppCompatActivity {
         String apiKey = getApplicationContext().getString(R.string.api_key);
 
         progress = new ProgressDialog(this);
-        progress.setTitle("Loading");
-        progress.setMessage("Wait while loading...");
+        progress.setTitle(getApplicationContext().getString(R.string.loading));
+        progress.setMessage(getApplicationContext().getString(R.string.wait));
         progress.setCancelable(false); // disable dismiss by tapping outside of the dialog
         progress.show();
 
