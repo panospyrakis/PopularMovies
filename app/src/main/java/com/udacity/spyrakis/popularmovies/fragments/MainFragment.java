@@ -63,6 +63,7 @@ public class MainFragment extends Fragment {
         ListAdapter adapter = new ListAdapter(listToDisplay.getResults(),getContext());
         listView.setAdapter(adapter);
 
+        rootView.invalidate();
         return rootView;
     }
 }

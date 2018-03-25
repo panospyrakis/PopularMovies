@@ -118,7 +118,11 @@ public class MainActivity extends AppCompatActivity {
                 // When the given dropdown item is selected, show its contents in the
                 // container view.
                 selectedPosition = position + 1;
-                populateList(getApplicationContext().getString(R.string.sortByPopular));
+                if (selectedPosition == 1){
+                    populateList(getApplicationContext().getString(R.string.sortByPopular));
+                }else{
+                    populateList(getApplicationContext().getString(R.string.sortByTopRated));
+                }
             }
 
             @Override

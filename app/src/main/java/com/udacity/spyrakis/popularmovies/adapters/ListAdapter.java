@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.udacity.spyrakis.popularmovies.R;
 import com.udacity.spyrakis.popularmovies.models.MovieList;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
     private ArrayList<ResultsItem> movies;
     private Context context;
+    ViewHolder vh;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -54,7 +56,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
         FrameLayout movieCell = (FrameLayout) inflater.inflate(R.layout.item_movie_list, parent, false);
 
 
-        ViewHolder vh = new ViewHolder(movieCell);
+        vh = new ViewHolder(movieCell);
         return vh;
     }
 
@@ -64,8 +66,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
         String imagePath = context.getString(R.string.icons_base_url) + context.getString(R.string.icon_size_suggested) + movies.get(position).getPosterPath();
-        Picasso.with(context).load(imagePath).into(holder.image);
-
+        Picasso.with(context).load(imagePath).placeholder(R.drawable.placeholder).into(holder.image);
 
     }
 
