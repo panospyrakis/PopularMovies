@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.udacity.spyrakis.popularmovies.R;
-import com.udacity.spyrakis.popularmovies.models.MovieDetails;
+import com.udacity.spyrakis.popularmovies.models.movies.MovieDetails;
 import com.udacity.spyrakis.popularmovies.services.PopularMoviesService;
 
 import butterknife.BindView;

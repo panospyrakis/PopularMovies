@@ -17,7 +17,7 @@ import com.udacity.spyrakis.popularmovies.R;
 import com.udacity.spyrakis.popularmovies.activities.DetailsActivity;
 import com.udacity.spyrakis.popularmovies.activities.MainActivity;
 import com.udacity.spyrakis.popularmovies.adapters.ListAdapter;
-import com.udacity.spyrakis.popularmovies.models.MovieList;
+import com.udacity.spyrakis.popularmovies.models.movies.MovieList;
 import com.udacity.spyrakis.popularmovies.services.OnItemClickListener;
 
 import butterknife.BindView;

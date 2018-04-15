@@ -1,14 +1,14 @@
-package com.udacity.spyrakis.popularmovies.models;
+package com.udacity.spyrakis.popularmovies.models.movies;
 
 import com.google.gson.annotations.SerializedName;
 
-public class SpokenLanguagesItem {
+public class GenresItem {
 
     @SerializedName("name")
     private String name;
 
-    @SerializedName("iso_639_1")
-    private String iso6391;
+    @SerializedName("id")
+    private int id;
 
     public void setName(String name) {
         this.name = name;
@@ -18,20 +18,20 @@ public class SpokenLanguagesItem {
         return name;
     }
 
-    public void setIso6391(String iso6391) {
-        this.iso6391 = iso6391;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public String getIso6391() {
-        return iso6391;
+    public int getId() {
+        return id;
     }
 
     @Override
     public String toString() {
         return
-                "SpokenLanguagesItem{" +
+                "GenresItem{" +
                         "name = '" + name + '\'' +
-                        ",iso_639_1 = '" + iso6391 + '\'' +
+                        ",id = '" + id + '\'' +
                         "}";
     }
 }

@@ -13,7 +13,7 @@ import android.widget.Spinner;
 import com.udacity.spyrakis.popularmovies.R;
 import com.udacity.spyrakis.popularmovies.adapters.CustomSpinnerAdapter;
 import com.udacity.spyrakis.popularmovies.fragments.MainFragment;
-import com.udacity.spyrakis.popularmovies.models.MovieList;
+import com.udacity.spyrakis.popularmovies.models.movies.MovieList;
 import com.udacity.spyrakis.popularmovies.services.PopularMoviesService;
 
 import butterknife.BindView;
