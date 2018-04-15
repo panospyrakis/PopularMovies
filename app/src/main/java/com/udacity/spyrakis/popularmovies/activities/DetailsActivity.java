@@ -9,6 +9,8 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 import com.udacity.spyrakis.popularmovies.R;
 import com.udacity.spyrakis.popularmovies.models.movies.MovieDetails;
+import com.udacity.spyrakis.popularmovies.models.reviews.ReviewsList;
+import com.udacity.spyrakis.popularmovies.models.videos.VideosList;
 import com.udacity.spyrakis.popularmovies.services.PopularMoviesService;
 
 import butterknife.BindView;
@@ -41,6 +43,12 @@ public class DetailsActivity extends AppCompatActivity {
     PopularMoviesService service;
     ProgressDialog progress;
     MovieDetails movie;
+    String apiKey = getApplicationContext().getString(R.string.api_key);
+    boolean detailsReturned = false;
+    boolean videosReturned = false;
+    boolean reviewsReturned = false;
+    VideosList videos;
+    ReviewsList reviews;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +58,19 @@ public class DetailsActivity extends AppCompatActivity {
 
         movieId = getIntent().getIntExtra(MainActivity.EXTRA_MOVIE_ID,0)+"";
         setUpNetworkCalls();
+        makeSomeCalls();
+    }
+
+    private void makeSomeCalls(){
+        progress = new ProgressDialog(this);
+        progress.setTitle(getApplicationContext().getString(R.string.loading));
+        progress.setMessage(getApplicationContext().getString(R.string.wait));
+        progress.setCancelable(false); // disable dismiss by tapping outside of the dialog
+        progress.show();
+
         getDetails();
+        getVideos();
+        getReviews();
     }
 
     private void setUpContent() {
@@ -68,27 +88,73 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
     private void getDetails() {
-        String apiKey = getApplicationContext().getString(R.string.api_key);
-
-        progress = new ProgressDialog(this);
-        progress.setTitle(getApplicationContext().getString(R.string.loading));
-        progress.setMessage(getApplicationContext().getString(R.string.wait));
-        progress.setCancelable(false); // disable dismiss by tapping outside of the dialog
-        progress.show();
 
         Call<MovieDetails> detailsCall = service.movieDetails(movieId, apiKey);
-
+        detailsReturned = false;
 
         detailsCall.enqueue(new Callback<MovieDetails>() {
             @Override
             public void onResponse(Call<MovieDetails> call, Response<MovieDetails> response) {
-                progress.dismiss();
+                detailsReturned = true;
+
                 movie = response.body();
-                setUpContent();
+                if (videosReturned && reviewsReturned){
+                    progress.dismiss();
+                    setUpContent();
+                }
             }
 
             @Override
             public void onFailure(Call<MovieDetails> call, Throwable t) {
+
+            }
+        });
+
+    }
+
+    private void getVideos() {
+
+        Call<VideosList> videosCall = service.videos(movieId, apiKey);
+        videosReturned = false;
+
+        videosCall.enqueue(new Callback<VideosList>() {
+            @Override
+            public void onResponse(Call<VideosList> call, Response<VideosList> response) {
+                videosReturned = true;
+
+                videos = response.body();
+                if (detailsReturned && reviewsReturned){
+                    progress.dismiss();
+                    setUpContent();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<VideosList> call, Throwable t) {
+
+            }
+        });
+
+    }
+
+    private void getReviews() {
+
+        Call<ReviewsList> videosCall = service.reviews(movieId, apiKey);
+        videosReturned = false;
+
+        videosCall.enqueue(new Callback<ReviewsList>() {
+            @Override
+            public void onResponse(Call<ReviewsList> call, Response<ReviewsList> response) {
+                reviewsReturned = true;
+                reviews = response.body();
+                if (detailsReturned && videosReturned){
+                    progress.dismiss();
+                    setUpContent();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ReviewsList> call, Throwable t) {
 
             }
         });
