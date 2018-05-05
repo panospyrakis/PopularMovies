@@ -10,6 +10,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Spinner;
 
+import com.udacity.spyrakis.popularmovies.BuildConfig;
 import com.udacity.spyrakis.popularmovies.R;
 import com.udacity.spyrakis.popularmovies.adapters.CustomSpinnerAdapter;
 import com.udacity.spyrakis.popularmovies.fragments.MainFragment;
@@ -59,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void populateList(String sortBy) {
-        String apiKey = getApplicationContext().getString(R.string.api_key);
+        String apiKey = BuildConfig.THE_MOVIE_DB_API_KEY;
 
         progress = new ProgressDialog(this);
         progress.setTitle(getApplicationContext().getString(R.string.loading));
