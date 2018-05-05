@@ -24,10 +24,10 @@ public interface PopularMoviesService {
     @GET("{sortBy}")
     Call<MovieList> listMovies(@Path("sortBy") String sortBy, @Query("api_key") String apiKey, @Query("page") int page);
 
-    @GET("movie/{movieId}/videos")
+    @GET("{movieId}/videos")
     Call<VideosList> videos(@Path("movieId") String movieId, @Query("api_key") String apiKey);
 
-    @GET("movie/{movieId}/reviews")
+    @GET("{movieId}/reviews")
     Call<ReviewsList> reviews(@Path("movieId") String movieId, @Query("api_key") String apiKey);
 
 }

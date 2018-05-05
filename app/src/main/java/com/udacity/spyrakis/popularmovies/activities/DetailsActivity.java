@@ -2,11 +2,13 @@ package com.udacity.spyrakis.popularmovies.activities;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+import com.udacity.spyrakis.popularmovies.BuildConfig;
 import com.udacity.spyrakis.popularmovies.R;
 import com.udacity.spyrakis.popularmovies.models.movies.MovieDetails;
 import com.udacity.spyrakis.popularmovies.models.reviews.ReviewsList;
@@ -43,7 +45,7 @@ public class DetailsActivity extends AppCompatActivity {
     PopularMoviesService service;
     ProgressDialog progress;
     MovieDetails movie;
-    String apiKey = getApplicationContext().getString(R.string.api_key);
+    String apiKey = BuildConfig.THE_MOVIE_DB_API_KEY;
     boolean detailsReturned = false;
     boolean videosReturned = false;
     boolean reviewsReturned = false;
@@ -94,7 +96,7 @@ public class DetailsActivity extends AppCompatActivity {
 
         detailsCall.enqueue(new Callback<MovieDetails>() {
             @Override
-            public void onResponse(Call<MovieDetails> call, Response<MovieDetails> response) {
+            public void onResponse(@NonNull Call<MovieDetails> call, @NonNull Response<MovieDetails> response) {
                 detailsReturned = true;
 
                 movie = response.body();
@@ -105,7 +107,7 @@ public class DetailsActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<MovieDetails> call, Throwable t) {
+            public void onFailure(@NonNull Call<MovieDetails> call, @NonNull Throwable t) {
 
             }
         });
@@ -119,7 +121,7 @@ public class DetailsActivity extends AppCompatActivity {
 
         videosCall.enqueue(new Callback<VideosList>() {
             @Override
-            public void onResponse(Call<VideosList> call, Response<VideosList> response) {
+            public void onResponse(@NonNull Call<VideosList> call, @NonNull Response<VideosList> response) {
                 videosReturned = true;
 
                 videos = response.body();
@@ -130,7 +132,7 @@ public class DetailsActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<VideosList> call, Throwable t) {
+            public void onFailure(@NonNull Call<VideosList> call, @NonNull Throwable t) {
 
             }
         });
@@ -144,7 +146,7 @@ public class DetailsActivity extends AppCompatActivity {
 
         videosCall.enqueue(new Callback<ReviewsList>() {
             @Override
-            public void onResponse(Call<ReviewsList> call, Response<ReviewsList> response) {
+            public void onResponse(@NonNull Call<ReviewsList> call, @NonNull Response<ReviewsList> response) {
                 reviewsReturned = true;
                 reviews = response.body();
                 if (detailsReturned && videosReturned){
@@ -154,7 +156,7 @@ public class DetailsActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<ReviewsList> call, Throwable t) {
+            public void onFailure(@NonNull Call<ReviewsList> call, @NonNull Throwable t) {
 
             }
         });
