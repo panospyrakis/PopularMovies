@@ -16,5 +16,8 @@
     <string name="vote_average">%1$s /10</string>
     <string name="details">Movie Details</string>
     <string name="desc">poster</string>
+    <string name="trailers">Trailers:</string>
+    <string name="trailer_list_title">Trailer %1$d</string>
+    <string name="trailer_list_title_placeholder">Trailer 1</string>
 
 </resources>

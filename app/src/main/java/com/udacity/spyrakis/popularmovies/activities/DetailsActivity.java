@@ -1,18 +1,27 @@
 package com.udacity.spyrakis.popularmovies.activities;
 
 import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.udacity.spyrakis.popularmovies.BuildConfig;
 import com.udacity.spyrakis.popularmovies.R;
+import com.udacity.spyrakis.popularmovies.adapters.TrailerListAdapter;
 import com.udacity.spyrakis.popularmovies.models.movies.MovieDetails;
 import com.udacity.spyrakis.popularmovies.models.reviews.ReviewsList;
 import com.udacity.spyrakis.popularmovies.models.videos.VideosList;
+import com.udacity.spyrakis.popularmovies.services.OnTrailerItemClick;
 import com.udacity.spyrakis.popularmovies.services.PopularMoviesService;
 
 import butterknife.BindView;
@@ -30,6 +39,8 @@ public class DetailsActivity extends AppCompatActivity {
 
     @BindView(R.id.details_title)
     TextView detailsTitle;
+    @BindView(R.id.details_container)
+    LinearLayout detailsContainer;
     @BindView(R.id.poster)
     ImageView poster;
     @BindView(R.id.date)
@@ -40,6 +51,10 @@ public class DetailsActivity extends AppCompatActivity {
     TextView score;
     @BindView(R.id.shortDescription)
     TextView shortDescription;
+    @BindView(R.id.trailerList)
+    RecyclerView trailerList;
+    @BindView(R.id.trailers_title)
+    TextView trailersTitle;
 
     String movieId;
     PopularMoviesService service;
@@ -87,6 +102,34 @@ public class DetailsActivity extends AppCompatActivity {
 
         Picasso.with(getApplicationContext()).load(imagePath).placeholder(R.drawable.placeholder).into(poster);
 
+        setUpTrailerList();
+
+    }
+
+    private void setUpTrailerList(){
+        if (videos == null || videos.getResults().isEmpty()){
+            trailerList.setVisibility(View.GONE);
+            trailersTitle.setVisibility(View.GONE);
+            return;
+        }
+        OnTrailerItemClick listener = new OnTrailerItemClick() {
+            @Override
+            public void onItemClick(String id) {
+                Intent appIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + id));
+                Intent webIntent = new Intent(Intent.ACTION_VIEW,
+                        Uri.parse("http://www.youtube.com/watch?v=" + id));
+                try {
+                    getApplicationContext().startActivity(appIntent);
+                } catch (ActivityNotFoundException ex) {
+                    getApplicationContext().startActivity(webIntent);
+                }
+            }
+        };
+
+        TrailerListAdapter adapter = new TrailerListAdapter(videos.getResults(), getApplicationContext(), listener);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+        this.trailerList.setLayoutManager(layoutManager);
+        this.trailerList.setAdapter(adapter);
     }
 
     private void getDetails() {
