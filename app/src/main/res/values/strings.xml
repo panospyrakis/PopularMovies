@@ -17,7 +17,10 @@
     <string name="details">Movie Details</string>
     <string name="desc">poster</string>
     <string name="trailers">Trailers:</string>
+    <string name="reviews">Reviews:</string>
     <string name="trailer_list_title">Trailer %1$d</string>
     <string name="trailer_list_title_placeholder">Trailer 1</string>
+    <string name="review_list_title_placeholder">Lorem ipsum</string>
+    <string name="lorem_ipsum_50">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur vitae mattis nunc. Suspendisse accumsan tempor nisi. In id luctus libero. Duis nunc neque, vehicula et euismod id, efficitur at ex. Aenean quis nisi aliquam, fringilla risus eu, maximus ante. Aliquam finibus ligula eget justo fringilla ultrices. Curabitur et mauris a. </string>
 
 </resources>

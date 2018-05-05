@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 import com.udacity.spyrakis.popularmovies.BuildConfig;
 import com.udacity.spyrakis.popularmovies.R;
+import com.udacity.spyrakis.popularmovies.adapters.ReviewsAdapter;
 import com.udacity.spyrakis.popularmovies.adapters.TrailerListAdapter;
 import com.udacity.spyrakis.popularmovies.models.movies.MovieDetails;
 import com.udacity.spyrakis.popularmovies.models.reviews.ReviewsList;
@@ -55,6 +56,10 @@ public class DetailsActivity extends AppCompatActivity {
     RecyclerView trailerList;
     @BindView(R.id.trailers_title)
     TextView trailersTitle;
+    @BindView(R.id.reviewList)
+    RecyclerView reviewsList;
+    @BindView(R.id.reviews_title)
+    TextView reviewsTitle;
 
     String movieId;
     PopularMoviesService service;
@@ -103,6 +108,7 @@ public class DetailsActivity extends AppCompatActivity {
         Picasso.with(getApplicationContext()).load(imagePath).placeholder(R.drawable.placeholder).into(poster);
 
         setUpTrailerList();
+        setUpReviewsList();
 
     }
 
@@ -130,6 +136,19 @@ public class DetailsActivity extends AppCompatActivity {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         this.trailerList.setLayoutManager(layoutManager);
         this.trailerList.setAdapter(adapter);
+    }
+
+    private void setUpReviewsList(){
+        if (reviews == null || reviews.getResults().isEmpty()){
+            reviewsList.setVisibility(View.GONE);
+            reviewsTitle.setVisibility(View.GONE);
+            return;
+        }
+
+        ReviewsAdapter adapter = new ReviewsAdapter(reviews.getResults(), getApplicationContext());
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+        this.reviewsList.setLayoutManager(layoutManager);
+        this.reviewsList.setAdapter(adapter);
     }
 
     private void getDetails() {
