@@ -10,6 +10,8 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Spinner;
 
+import com.facebook.stetho.Stetho;
+import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.udacity.spyrakis.popularmovies.BuildConfig;
 import com.udacity.spyrakis.popularmovies.R;
 import com.udacity.spyrakis.popularmovies.adapters.CustomSpinnerAdapter;
@@ -48,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Stetho.initializeWithDefaults(this);
 
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
@@ -93,7 +96,11 @@ public class MainActivity extends AppCompatActivity {
     private void setUpNetworkCalls() {
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-        OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor).build();
+        OkHttpClient client = new OkHttpClient
+                .Builder()
+                .addInterceptor(interceptor)
+                .addNetworkInterceptor(new StethoInterceptor())
+                .build();
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(getApplicationContext().getString(R.string.base_url))

@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.squareup.picasso.Picasso;
 import com.udacity.spyrakis.popularmovies.BuildConfig;
 import com.udacity.spyrakis.popularmovies.R;
@@ -228,7 +229,10 @@ public class DetailsActivity extends AppCompatActivity {
     private void setUpNetworkCalls() {
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-        OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor).build();
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addNetworkInterceptor(new StethoInterceptor())
+                .addInterceptor(interceptor)
+                .build();
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(getApplicationContext().getString(R.string.base_url))
