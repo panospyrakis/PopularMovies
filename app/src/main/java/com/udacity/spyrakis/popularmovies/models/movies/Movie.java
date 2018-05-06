@@ -185,6 +185,9 @@ public class Movie implements Parcelable {
 			"}";
 		}
 
+	public Movie() {
+	}
+
 	@Override
 	public int describeContents() {
 		return 0;
@@ -208,10 +211,7 @@ public class Movie implements Parcelable {
 		dest.writeInt(this.voteCount);
 	}
 
-	public Movie() {
-	}
-
-	protected Movie(Parcel in) {
+	private Movie(Parcel in) {
 		this.overview = in.readString();
 		this.originalLanguage = in.readString();
 		this.originalTitle = in.readString();
@@ -229,7 +229,7 @@ public class Movie implements Parcelable {
 		this.voteCount = in.readInt();
 	}
 
-	public static final Parcelable.Creator<Movie> CREATOR = new Parcelable.Creator<Movie>() {
+	public static final Creator<Movie> CREATOR = new Creator<Movie>() {
 		@Override
 		public Movie createFromParcel(Parcel source) {
 			return new Movie(source);

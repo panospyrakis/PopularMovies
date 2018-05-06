@@ -1,10 +1,14 @@
 package com.udacity.spyrakis.popularmovies.models.movies;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class MovieDetails {
+public class MovieDetails implements Parcelable {
 
     @SerializedName("original_language")
     private String originalLanguage;
@@ -67,7 +71,7 @@ public class MovieDetails {
     private double voteAverage;
 
     @SerializedName("belongs_to_collection")
-    private Object belongsToCollection;
+    private BelongsToCollection belongsToCollection;
 
     @SerializedName("tagline")
     private String tagline;
@@ -76,7 +80,7 @@ public class MovieDetails {
     private boolean adult;
 
     @SerializedName("homepage")
-    private Object homepage;
+    private String homepage;
 
     @SerializedName("status")
     private String status;
@@ -241,11 +245,11 @@ public class MovieDetails {
         return voteAverage;
     }
 
-    public void setBelongsToCollection(Object belongsToCollection) {
+    public void setBelongsToCollection(BelongsToCollection belongsToCollection) {
         this.belongsToCollection = belongsToCollection;
     }
 
-    public Object getBelongsToCollection() {
+    public BelongsToCollection getBelongsToCollection() {
         return belongsToCollection;
     }
 
@@ -265,11 +269,11 @@ public class MovieDetails {
         return adult;
     }
 
-    public void setHomepage(Object homepage) {
+    public void setHomepage(String homepage) {
         this.homepage = homepage;
     }
 
-    public Object getHomepage() {
+    public String getHomepage() {
         return homepage;
     }
 
@@ -312,4 +316,84 @@ public class MovieDetails {
                         ",status = '" + status + '\'' +
                         "}";
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.originalLanguage);
+        dest.writeString(this.imdbId);
+        dest.writeByte(this.video ? (byte) 1 : (byte) 0);
+        dest.writeString(this.title);
+        dest.writeString(this.backdropPath);
+        dest.writeInt(this.revenue);
+        dest.writeTypedList(this.genres);
+        dest.writeDouble(this.popularity);
+        dest.writeList(this.productionCountries);
+        dest.writeInt(this.id);
+        dest.writeInt(this.voteCount);
+        dest.writeInt(this.budget);
+        dest.writeString(this.overview);
+        dest.writeString(this.originalTitle);
+        dest.writeInt(this.runtime);
+        dest.writeString(this.posterPath);
+        dest.writeList(this.spokenLanguages);
+        dest.writeList(this.productionCompanies);
+        dest.writeString(this.releaseDate);
+        dest.writeDouble(this.voteAverage);
+        dest.writeParcelable(this.belongsToCollection, flags);
+        dest.writeString(this.tagline);
+        dest.writeByte(this.adult ? (byte) 1 : (byte) 0);
+        dest.writeString(this.homepage);
+        dest.writeString(this.status);
+    }
+
+    public MovieDetails() {
+    }
+
+    protected MovieDetails(Parcel in) {
+        this.originalLanguage = in.readString();
+        this.imdbId = in.readString();
+        this.video = in.readByte() != 0;
+        this.title = in.readString();
+        this.backdropPath = in.readString();
+        this.revenue = in.readInt();
+        this.genres = in.createTypedArrayList(GenresItem.CREATOR);
+        this.popularity = in.readDouble();
+        this.productionCountries = new ArrayList<ProductionCountriesItem>();
+        in.readList(this.productionCountries, ProductionCountriesItem.class.getClassLoader());
+        this.id = in.readInt();
+        this.voteCount = in.readInt();
+        this.budget = in.readInt();
+        this.overview = in.readString();
+        this.originalTitle = in.readString();
+        this.runtime = in.readInt();
+        this.posterPath = in.readString();
+        this.spokenLanguages = new ArrayList<SpokenLanguagesItem>();
+        in.readList(this.spokenLanguages, SpokenLanguagesItem.class.getClassLoader());
+        this.productionCompanies = new ArrayList<ProductionCompaniesItem>();
+        in.readList(this.productionCompanies, ProductionCompaniesItem.class.getClassLoader());
+        this.releaseDate = in.readString();
+        this.voteAverage = in.readDouble();
+        this.belongsToCollection = in.readParcelable(Object.class.getClassLoader());
+        this.tagline = in.readString();
+        this.adult = in.readByte() != 0;
+        this.homepage = in.readParcelable(Object.class.getClassLoader());
+        this.status = in.readString();
+    }
+
+    public static final Parcelable.Creator<MovieDetails> CREATOR = new Parcelable.Creator<MovieDetails>() {
+        @Override
+        public MovieDetails createFromParcel(Parcel source) {
+            return new MovieDetails(source);
+        }
+
+        @Override
+        public MovieDetails[] newArray(int size) {
+            return new MovieDetails[size];
+        }
+    };
 }

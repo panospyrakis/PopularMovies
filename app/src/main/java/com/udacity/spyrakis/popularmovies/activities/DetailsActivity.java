@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -14,9 +13,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.squareup.picasso.Picasso;
-import com.udacity.spyrakis.popularmovies.BuildConfig;
 import com.udacity.spyrakis.popularmovies.R;
 import com.udacity.spyrakis.popularmovies.adapters.ReviewsAdapter;
 import com.udacity.spyrakis.popularmovies.adapters.TrailerListAdapter;
@@ -24,19 +21,14 @@ import com.udacity.spyrakis.popularmovies.models.movies.MovieDetails;
 import com.udacity.spyrakis.popularmovies.models.reviews.ReviewsList;
 import com.udacity.spyrakis.popularmovies.models.videos.VideosList;
 import com.udacity.spyrakis.popularmovies.services.OnTrailerItemClick;
-import com.udacity.spyrakis.popularmovies.services.PopularMoviesService;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
-public class DetailsActivity extends AppCompatActivity {
+public class DetailsActivity extends BaseActivity {
 
 
     @BindView(R.id.details_title)
@@ -63,15 +55,17 @@ public class DetailsActivity extends AppCompatActivity {
     TextView reviewsTitle;
 
     String movieId;
-    PopularMoviesService service;
     ProgressDialog progress;
     MovieDetails movie;
-    String apiKey = BuildConfig.THE_MOVIE_DB_API_KEY;
     boolean detailsReturned = false;
     boolean videosReturned = false;
     boolean reviewsReturned = false;
     VideosList videos;
     ReviewsList reviews;
+
+    public static final String EXTRA_TRAILERS = "EXTRA_TRAILERS";
+    public static final String EXTRA_REVIEWS = "EXTRA_REVIEWS";
+    public static final String EXTRA_DETAILS = "EXTRA_DETAILS";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +76,41 @@ public class DetailsActivity extends AppCompatActivity {
         movieId = getIntent().getIntExtra(MainActivity.EXTRA_MOVIE_ID,0)+"";
         setUpNetworkCalls();
         makeSomeCalls();
+    }
+
+
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        if (savedInstanceState.getParcelable(EXTRA_TRAILERS) != null &&
+                savedInstanceState.getParcelable(EXTRA_REVIEWS) != null &&
+                savedInstanceState.getParcelable(EXTRA_DETAILS) != null){
+            reviews = savedInstanceState.getParcelable(EXTRA_REVIEWS);
+            videos = savedInstanceState.getParcelable(EXTRA_TRAILERS);
+            movie = savedInstanceState.getParcelable(EXTRA_DETAILS);
+            setUpTrailerList();
+            setUpReviewsList();
+        }else{
+            makeSomeCalls();
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(EXTRA_TRAILERS,videos);
+        outState.putParcelable(EXTRA_REVIEWS,reviews);
+        outState.putParcelable(EXTRA_DETAILS,movie);
+    }
+
+    @Override
+    public void onStart() {
+        if (progress != null && progress.isShowing()){
+            progress.dismiss();
+        }
+        makeSomeCalls();
+        super.onStart();
     }
 
     private void makeSomeCalls(){
@@ -161,6 +190,7 @@ public class DetailsActivity extends AppCompatActivity {
             @Override
             public void onResponse(@NonNull Call<MovieDetails> call, @NonNull Response<MovieDetails> response) {
                 detailsReturned = true;
+                if (!isActive) return;
 
                 movie = response.body();
                 if (videosReturned && reviewsReturned){
@@ -171,7 +201,7 @@ public class DetailsActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(@NonNull Call<MovieDetails> call, @NonNull Throwable t) {
-
+                progress.dismiss();
             }
         });
 
@@ -186,6 +216,7 @@ public class DetailsActivity extends AppCompatActivity {
             @Override
             public void onResponse(@NonNull Call<VideosList> call, @NonNull Response<VideosList> response) {
                 videosReturned = true;
+                if (!isActive) return;
 
                 videos = response.body();
                 if (detailsReturned && reviewsReturned){
@@ -196,7 +227,7 @@ public class DetailsActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(@NonNull Call<VideosList> call, @NonNull Throwable t) {
-
+                progress.dismiss();
             }
         });
 
@@ -226,20 +257,5 @@ public class DetailsActivity extends AppCompatActivity {
 
     }
 
-    private void setUpNetworkCalls() {
-        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-        OkHttpClient client = new OkHttpClient.Builder()
-                .addNetworkInterceptor(new StethoInterceptor())
-                .addInterceptor(interceptor)
-                .build();
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(getApplicationContext().getString(R.string.base_url))
-                .client(client)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        service = retrofit.create(PopularMoviesService.class);
-    }
 }

@@ -1,8 +1,11 @@
 package com.udacity.spyrakis.popularmovies.models.movies;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
-public class ProductionCountriesItem {
+public class ProductionCountriesItem implements Parcelable {
 
     @SerializedName("iso_3166_1")
     private String iso31661;
@@ -34,4 +37,35 @@ public class ProductionCountriesItem {
                         ",name = '" + name + '\'' +
                         "}";
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.iso31661);
+        dest.writeString(this.name);
+    }
+
+    public ProductionCountriesItem() {
+    }
+
+    protected ProductionCountriesItem(Parcel in) {
+        this.iso31661 = in.readString();
+        this.name = in.readString();
+    }
+
+    public static final Parcelable.Creator<ProductionCountriesItem> CREATOR = new Parcelable.Creator<ProductionCountriesItem>() {
+        @Override
+        public ProductionCountriesItem createFromParcel(Parcel source) {
+            return new ProductionCountriesItem(source);
+        }
+
+        @Override
+        public ProductionCountriesItem[] newArray(int size) {
+            return new ProductionCountriesItem[size];
+        }
+    };
 }

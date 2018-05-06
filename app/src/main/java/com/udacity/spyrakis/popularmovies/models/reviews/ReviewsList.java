@@ -1,10 +1,14 @@
 package com.udacity.spyrakis.popularmovies.models.reviews;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class ReviewsList {
+public class ReviewsList implements Parcelable {
 
     @SerializedName("id")
     private int id;
@@ -72,4 +76,42 @@ public class ReviewsList {
                         ",total_results = '" + totalResults + '\'' +
                         "}";
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(this.id);
+        dest.writeInt(this.page);
+        dest.writeInt(this.totalPages);
+        dest.writeList(this.results);
+        dest.writeInt(this.totalResults);
+    }
+
+    public ReviewsList() {
+    }
+
+    protected ReviewsList(Parcel in) {
+        this.id = in.readInt();
+        this.page = in.readInt();
+        this.totalPages = in.readInt();
+        this.results = new ArrayList<Review>();
+        in.readList(this.results, Review.class.getClassLoader());
+        this.totalResults = in.readInt();
+    }
+
+    public static final Parcelable.Creator<ReviewsList> CREATOR = new Parcelable.Creator<ReviewsList>() {
+        @Override
+        public ReviewsList createFromParcel(Parcel source) {
+            return new ReviewsList(source);
+        }
+
+        @Override
+        public ReviewsList[] newArray(int size) {
+            return new ReviewsList[size];
+        }
+    };
 }

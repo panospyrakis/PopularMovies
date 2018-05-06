@@ -2,7 +2,6 @@ package com.udacity.spyrakis.popularmovies.activities;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.View;
@@ -11,36 +10,28 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Spinner;
 
 import com.facebook.stetho.Stetho;
-import com.facebook.stetho.okhttp3.StethoInterceptor;
-import com.udacity.spyrakis.popularmovies.BuildConfig;
 import com.udacity.spyrakis.popularmovies.R;
 import com.udacity.spyrakis.popularmovies.adapters.CustomSpinnerAdapter;
 import com.udacity.spyrakis.popularmovies.fragments.MainFragment;
 import com.udacity.spyrakis.popularmovies.models.movies.MovieList;
-import com.udacity.spyrakis.popularmovies.services.PopularMoviesService;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
     public static final String EXTRA_MOVIE_ID = "EXTRA_MOVIE_ID";
+    public static final String EXTRA_MOVIES = "EXTRA_MOVIES";
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
     @BindView(R.id.spinner)
     Spinner spinner;
-
-    PopularMoviesService service;
 
     MovieList movieListToDisplay;
 
@@ -57,13 +48,37 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        setupSpinner();
-
         setUpNetworkCalls();
+
+        setupSpinner();
+    }
+
+    @Override
+    public void onStart() {
+        if (progress != null && progress.isShowing()){
+            progress.dismiss();
+        }
+        setupSpinner();
+        super.onStart();
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        if (savedInstanceState.getParcelable(EXTRA_MOVIES) != null){
+            movieListToDisplay = savedInstanceState.getParcelable(EXTRA_MOVIES);
+        }else{
+             setupSpinner();
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(EXTRA_MOVIES,movieListToDisplay);
     }
 
     private void populateList(String sortBy) {
-        String apiKey = BuildConfig.THE_MOVIE_DB_API_KEY;
 
         progress = new ProgressDialog(this);
         progress.setTitle(getApplicationContext().getString(R.string.loading));
@@ -77,39 +92,26 @@ public class MainActivity extends AppCompatActivity {
         listCall.enqueue(new Callback<MovieList>() {
             @Override
             public void onResponse(Call<MovieList> call, Response<MovieList> response) {
+
+                if (!isActive) return;
+
                 movieListToDisplay = response.body();
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.container, MainFragment.newInstance(selectedPosition, movieListToDisplay))
                         .commit();
                 progress.dismiss();
 
+
             }
 
             @Override
             public void onFailure(Call<MovieList> call, Throwable t) {
-
+                progress.dismiss();
             }
         });
 
     }
 
-    private void setUpNetworkCalls() {
-        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-        OkHttpClient client = new OkHttpClient
-                .Builder()
-                .addInterceptor(interceptor)
-                .addNetworkInterceptor(new StethoInterceptor())
-                .build();
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(getApplicationContext().getString(R.string.base_url))
-                .client(client)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        service = retrofit.create(PopularMoviesService.class);
-    }
 
     private void setupSpinner() {
         // Setup spinner
