@@ -2,13 +2,16 @@ package com.udacity.spyrakis.popularmovies.activities;
 
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -17,6 +20,7 @@ import com.squareup.picasso.Picasso;
 import com.udacity.spyrakis.popularmovies.R;
 import com.udacity.spyrakis.popularmovies.adapters.ReviewsAdapter;
 import com.udacity.spyrakis.popularmovies.adapters.TrailerListAdapter;
+import com.udacity.spyrakis.popularmovies.data.MoviesContract;
 import com.udacity.spyrakis.popularmovies.models.movies.MovieDetails;
 import com.udacity.spyrakis.popularmovies.models.reviews.ReviewsList;
 import com.udacity.spyrakis.popularmovies.models.videos.VideosList;
@@ -28,7 +32,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class DetailsActivity extends BaseActivity {
+public class DetailsActivity extends BaseActivity{
 
 
     @BindView(R.id.details_title)
@@ -53,15 +57,21 @@ public class DetailsActivity extends BaseActivity {
     RecyclerView reviewsList;
     @BindView(R.id.reviews_title)
     TextView reviewsTitle;
+    @BindView(R.id.favourite_button)
+    Button favouriteButton;
 
     String movieId;
     ProgressDialog progress;
     MovieDetails movie;
+    String imagePath;
     boolean detailsReturned = false;
     boolean videosReturned = false;
     boolean reviewsReturned = false;
+    boolean isSelected = false;
     VideosList videos;
     ReviewsList reviews;
+    private Cursor mDetailCursor;
+    private static final int CURSOR_LOADER_ID = 0;
 
     public static final String EXTRA_TRAILERS = "EXTRA_TRAILERS";
     public static final String EXTRA_REVIEWS = "EXTRA_REVIEWS";
@@ -73,25 +83,74 @@ public class DetailsActivity extends BaseActivity {
         setContentView(R.layout.activity_details);
         ButterKnife.bind(this);
 
-        movieId = getIntent().getIntExtra(MainActivity.EXTRA_MOVIE_ID,0)+"";
+        movieId = getIntent().getIntExtra(MainActivity.EXTRA_MOVIE_ID, 0) + "";
         setUpNetworkCalls();
         makeSomeCalls();
+        setUpButton();
     }
 
+    private void toggleButtonUI(){
+        if (isSelected){
+            favouriteButton.setText(getApplicationContext().getString(R.string.marked_as_favourite));
+        }else{
+            favouriteButton.setText(getApplicationContext().getString(R.string.mark_as_favourite));
+        }
+        favouriteButton.invalidate();
+    }
 
+    private void setUpButton() {
+        String selectionClause = MoviesContract.MovieEntry.MOVIE_ID + " = ?";
+
+        String[] selectionArgs = new String[]{movieId};
+
+        mDetailCursor = getContentResolver().query(
+                MoviesContract.MovieEntry.CONTENT_URI,
+                null,
+                selectionClause,
+                selectionArgs,
+                null);
+
+        isSelected = mDetailCursor != null && mDetailCursor.getCount() != 0;
+
+        toggleButtonUI();
+
+        favouriteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!isSelected){
+                    isSelected = true;
+                    toggleButtonUI();
+                    ContentValues itemToAdd = new ContentValues();
+                    itemToAdd.put(MoviesContract.MovieEntry.COLUMN_ICON,imagePath);
+                    itemToAdd.put(MoviesContract.MovieEntry.TITLE, movie.getTitle());
+                    itemToAdd.put(MoviesContract.MovieEntry.MOVIE_ID,movieId);
+                    getContentResolver().insert(MoviesContract.MovieEntry.CONTENT_URI,itemToAdd);
+                }else{
+                    isSelected = false;
+                    toggleButtonUI();
+                    String selectionClause = MoviesContract.MovieEntry.MOVIE_ID + " = ?";
+
+                    String[] selectionArgs = new String[]{movieId};
+
+                    getContentResolver().delete(MoviesContract.MovieEntry.CONTENT_URI,selectionClause,selectionArgs);
+                }
+            }
+        });
+
+    }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         if (savedInstanceState.getParcelable(EXTRA_TRAILERS) != null &&
                 savedInstanceState.getParcelable(EXTRA_REVIEWS) != null &&
-                savedInstanceState.getParcelable(EXTRA_DETAILS) != null){
+                savedInstanceState.getParcelable(EXTRA_DETAILS) != null) {
             reviews = savedInstanceState.getParcelable(EXTRA_REVIEWS);
             videos = savedInstanceState.getParcelable(EXTRA_TRAILERS);
             movie = savedInstanceState.getParcelable(EXTRA_DETAILS);
             setUpTrailerList();
             setUpReviewsList();
-        }else{
+        } else {
             makeSomeCalls();
         }
     }
@@ -99,21 +158,21 @@ public class DetailsActivity extends BaseActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(EXTRA_TRAILERS,videos);
-        outState.putParcelable(EXTRA_REVIEWS,reviews);
-        outState.putParcelable(EXTRA_DETAILS,movie);
+        outState.putParcelable(EXTRA_TRAILERS, videos);
+        outState.putParcelable(EXTRA_REVIEWS, reviews);
+        outState.putParcelable(EXTRA_DETAILS, movie);
     }
 
     @Override
     public void onStart() {
-        if (progress != null && progress.isShowing()){
+        if (progress != null && progress.isShowing()) {
             progress.dismiss();
         }
         makeSomeCalls();
         super.onStart();
     }
 
-    private void makeSomeCalls(){
+    private void makeSomeCalls() {
         progress = new ProgressDialog(this);
         progress.setTitle(getApplicationContext().getString(R.string.loading));
         progress.setMessage(getApplicationContext().getString(R.string.wait));
@@ -126,14 +185,16 @@ public class DetailsActivity extends BaseActivity {
     }
 
     private void setUpContent() {
-
+        if (movie == null) {
+            return;
+        }
         detailsTitle.setText(movie.getTitle());
         releaseDate.setText(movie.getReleaseDate().substring(0, 4));
         duration.setText(getApplicationContext().getString(R.string.duration, movie.getRuntime()));
         detailsTitle.setText(movie.getTitle());
-        score.setText(getApplicationContext().getString(R.string.vote_average, movie.getVoteAverage()+""));
+        score.setText(getApplicationContext().getString(R.string.vote_average, movie.getVoteAverage() + ""));
         shortDescription.setText(movie.getOverview());
-        String imagePath = getApplicationContext().getString(R.string.icons_base_url) + getApplicationContext().getString(R.string.icon_size_suggested) + movie.getPosterPath();
+        imagePath = getApplicationContext().getString(R.string.icons_base_url) + getApplicationContext().getString(R.string.icon_size_suggested) + movie.getPosterPath();
 
         Picasso.with(getApplicationContext()).load(imagePath).placeholder(R.drawable.placeholder).into(poster);
 
@@ -142,8 +203,8 @@ public class DetailsActivity extends BaseActivity {
 
     }
 
-    private void setUpTrailerList(){
-        if (videos == null || videos.getResults().isEmpty()){
+    private void setUpTrailerList() {
+        if (videos == null || videos.getResults().isEmpty()) {
             trailerList.setVisibility(View.GONE);
             trailersTitle.setVisibility(View.GONE);
             return;
@@ -168,8 +229,8 @@ public class DetailsActivity extends BaseActivity {
         this.trailerList.setAdapter(adapter);
     }
 
-    private void setUpReviewsList(){
-        if (reviews == null || reviews.getResults().isEmpty()){
+    private void setUpReviewsList() {
+        if (reviews == null || reviews.getResults().isEmpty()) {
             reviewsList.setVisibility(View.GONE);
             reviewsTitle.setVisibility(View.GONE);
             return;
@@ -193,7 +254,7 @@ public class DetailsActivity extends BaseActivity {
                 if (!isActive) return;
 
                 movie = response.body();
-                if (videosReturned && reviewsReturned){
+                if (videosReturned && reviewsReturned) {
                     progress.dismiss();
                     setUpContent();
                 }
@@ -219,7 +280,7 @@ public class DetailsActivity extends BaseActivity {
                 if (!isActive) return;
 
                 videos = response.body();
-                if (detailsReturned && reviewsReturned){
+                if (detailsReturned && reviewsReturned) {
                     progress.dismiss();
                     setUpContent();
                 }
@@ -243,7 +304,7 @@ public class DetailsActivity extends BaseActivity {
             public void onResponse(@NonNull Call<ReviewsList> call, @NonNull Response<ReviewsList> response) {
                 reviewsReturned = true;
                 reviews = response.body();
-                if (detailsReturned && videosReturned){
+                if (detailsReturned && videosReturned) {
                     progress.dismiss();
                     setUpContent();
                 }
@@ -256,6 +317,4 @@ public class DetailsActivity extends BaseActivity {
         });
 
     }
-
-
 }

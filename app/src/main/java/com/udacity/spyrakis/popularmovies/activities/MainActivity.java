@@ -12,6 +12,7 @@ import android.widget.Spinner;
 import com.facebook.stetho.Stetho;
 import com.udacity.spyrakis.popularmovies.R;
 import com.udacity.spyrakis.popularmovies.adapters.CustomSpinnerAdapter;
+import com.udacity.spyrakis.popularmovies.fragments.FavouritesFragment;
 import com.udacity.spyrakis.popularmovies.fragments.MainFragment;
 import com.udacity.spyrakis.popularmovies.models.movies.MovieList;
 
@@ -26,6 +27,7 @@ public class MainActivity extends BaseActivity {
 
     public static final String EXTRA_MOVIE_ID = "EXTRA_MOVIE_ID";
     public static final String EXTRA_MOVIES = "EXTRA_MOVIES";
+    public static final String EXTRA_SELECTED_TAB = "EXTRA_SELECTED_TAB";
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -35,13 +37,20 @@ public class MainActivity extends BaseActivity {
 
     MovieList movieListToDisplay;
 
-    int selectedPosition = 0;
+    int selectedPosition = 1;
 
     ProgressDialog progress;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Stetho.initializeWithDefaults(this);
+
+        Stetho.initialize(
+                Stetho.newInitializerBuilder(this)
+                        .enableDumpapp(
+                                Stetho.defaultDumperPluginsProvider(this))
+                        .enableWebKitInspector(
+                                Stetho.defaultInspectorModulesProvider(this))
+                        .build());
 
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
@@ -67,6 +76,8 @@ public class MainActivity extends BaseActivity {
         super.onRestoreInstanceState(savedInstanceState);
         if (savedInstanceState.getParcelable(EXTRA_MOVIES) != null){
             movieListToDisplay = savedInstanceState.getParcelable(EXTRA_MOVIES);
+            selectedPosition = savedInstanceState.getInt(EXTRA_SELECTED_TAB,1);
+            setupSpinner();
         }else{
              setupSpinner();
         }
@@ -75,7 +86,14 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        outState.putInt(EXTRA_SELECTED_TAB,selectedPosition);
         outState.putParcelable(EXTRA_MOVIES,movieListToDisplay);
+    }
+
+    private void showFavourites(){
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container, FavouritesFragment.newInstance(selectedPosition))
+                .commit();
     }
 
     private void populateList(String sortBy) {
@@ -120,8 +138,9 @@ public class MainActivity extends BaseActivity {
                 new String[]{
                         getApplicationContext().getString(R.string.popular),
                         getApplicationContext().getString(R.string.topRated),
+                        getApplicationContext().getString(R.string.favourite)
                 }));
-
+        spinner.setSelection(selectedPosition-1);
         spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -130,8 +149,10 @@ public class MainActivity extends BaseActivity {
                 selectedPosition = position + 1;
                 if (selectedPosition == 1){
                     populateList(getApplicationContext().getString(R.string.sortByPopular));
-                }else{
+                }else if (selectedPosition == 2){
                     populateList(getApplicationContext().getString(R.string.sortByTopRated));
+                }else{
+                    showFavourites();
                 }
             }
 

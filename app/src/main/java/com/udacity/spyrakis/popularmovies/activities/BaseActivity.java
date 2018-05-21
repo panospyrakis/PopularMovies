@@ -18,9 +18,10 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        isActive = true;
     }
 
-    static boolean isActive = false;
+    boolean isActive = false;
     PopularMoviesService service;
     String apiKey = BuildConfig.THE_MOVIE_DB_API_KEY;
 
@@ -30,6 +31,11 @@ public class BaseActivity extends AppCompatActivity {
         isActive = true;
     }
 
+    @Override
+    public void onResume(){
+        super.onResume();
+        isActive = true;
+    }
     @Override
     public void onStop() {
         super.onStop();

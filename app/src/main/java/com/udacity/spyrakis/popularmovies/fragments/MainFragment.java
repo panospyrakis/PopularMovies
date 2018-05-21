@@ -33,7 +33,6 @@ public class MainFragment extends Fragment {
      */
     private static final String ARG_SECTION_NUMBER = "section_number";
     private static final String ARG_MOVIE_LIST = "movie_list";
-
     @BindView(R.id.movie_List)
     RecyclerView listView;
 
@@ -59,22 +58,20 @@ public class MainFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         ButterKnife.bind(this, rootView);
         MovieList listToDisplay = getArguments().getParcelable(ARG_MOVIE_LIST);
+        GridLayoutManager layoutManager = new GridLayoutManager(getActivity(), 2);
+        listView.setLayoutManager(layoutManager);
 
-        if(listToDisplay != null) {
-            GridLayoutManager layoutManager = new GridLayoutManager(getActivity(), 2);
-            listView.setLayoutManager(layoutManager);
+        OnItemClickListener listener = new OnItemClickListener() {
+            @Override
+            public void onItemClick(int movieId) {
+                Intent detailsIntent = new Intent(getActivity(), DetailsActivity.class);
+                detailsIntent.putExtra(MainActivity.EXTRA_MOVIE_ID, movieId); //Optional parameters
+                getContext().startActivity(detailsIntent);
+            }
+        };
+        ListAdapter adapter = new ListAdapter(listToDisplay.getResults(), getContext(), listener);
+        listView.setAdapter(adapter);
 
-            OnItemClickListener listener = new OnItemClickListener() {
-                @Override
-                public void onItemClick(int movieId) {
-                    Intent detailsIntent = new Intent(getActivity(), DetailsActivity.class);
-                    detailsIntent.putExtra(MainActivity.EXTRA_MOVIE_ID, movieId); //Optional parameters
-                    getContext().startActivity(detailsIntent);
-                }
-            };
-            ListAdapter adapter = new ListAdapter(listToDisplay.getResults(), getContext(), listener);
-            listView.setAdapter(adapter);
-        }
         return rootView;
     }
 }

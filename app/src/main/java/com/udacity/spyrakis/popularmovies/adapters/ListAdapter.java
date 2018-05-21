@@ -25,7 +25,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
     private ArrayList<Movie> movies;
     private Context context;
     private OnItemClickListener listener;
-    ViewHolder vh;
+    private ViewHolder vh;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -36,15 +36,16 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
         Movie movie;
 
-        public ViewHolder(FrameLayout v) {
+        ViewHolder(FrameLayout v) {
             super(v);
             image = v.findViewById(R.id.movieImg);
 
         }
 
-        public void bind(final int movieId, final OnItemClickListener listener) {
+        void bind(final int movieId, final OnItemClickListener listener) {
             image.setOnClickListener(new View.OnClickListener() {
-                @Override public void onClick(View v) {
+                @Override
+                public void onClick(View v) {
                     listener.onItemClick(movieId);
                 }
             });

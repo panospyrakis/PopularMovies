@@ -1,15 +1,7 @@
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/constraintLayout"
+    android:id="@+id/movie_List"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.udacity.spyrakis.popularmovies.fragments.MainFragment">
+    android:layout_height="match_parent" />
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/movie_List"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        />
-
-</android.support.constraint.ConstraintLayout>

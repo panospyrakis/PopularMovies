@@ -26,6 +26,14 @@
             android:label="@string/details"
             android:parentActivityName=".activities.MainActivity" />
         <activity android:name=".activities.BaseActivity"></activity>
+
+        <provider
+            android:authorities="@string/content_authority"
+            android:name=".data.MoviesProvider"
+            android:exported="false"
+            android:syncable="true"/>
+
+
     </application>
 
 </manifest>
