@@ -28,6 +28,7 @@ public class MainActivity extends BaseActivity {
     public static final String EXTRA_MOVIE_ID = "EXTRA_MOVIE_ID";
     public static final String EXTRA_MOVIES = "EXTRA_MOVIES";
     public static final String EXTRA_SELECTED_TAB = "EXTRA_SELECTED_TAB";
+    public static final String EXTRA_SPINNER = "EXTRA_SPINNER";
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -38,6 +39,8 @@ public class MainActivity extends BaseActivity {
     MovieList movieListToDisplay;
 
     int selectedPosition = 1;
+
+    boolean isFromRestore = false;
 
     ProgressDialog progress;
     @Override
@@ -58,8 +61,9 @@ public class MainActivity extends BaseActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         setUpNetworkCalls();
-
-        setupSpinner();
+        if(savedInstanceState == null){
+            setupSpinner();
+        }
     }
 
     @Override
@@ -67,7 +71,6 @@ public class MainActivity extends BaseActivity {
         if (progress != null && progress.isShowing()){
             progress.dismiss();
         }
-        setupSpinner();
         super.onStart();
     }
 
@@ -77,9 +80,10 @@ public class MainActivity extends BaseActivity {
         if (savedInstanceState.getParcelable(EXTRA_MOVIES) != null){
             movieListToDisplay = savedInstanceState.getParcelable(EXTRA_MOVIES);
             selectedPosition = savedInstanceState.getInt(EXTRA_SELECTED_TAB,1);
+            isFromRestore = true;
             setupSpinner();
         }else{
-             setupSpinner();
+            setupSpinner();
         }
     }
 
@@ -88,6 +92,7 @@ public class MainActivity extends BaseActivity {
         super.onSaveInstanceState(outState);
         outState.putInt(EXTRA_SELECTED_TAB,selectedPosition);
         outState.putParcelable(EXTRA_MOVIES,movieListToDisplay);
+        outState.putParcelable(EXTRA_SPINNER,spinner.onSaveInstanceState());
     }
 
     private void showFavourites(){
@@ -114,8 +119,11 @@ public class MainActivity extends BaseActivity {
                 if (!isActive) return;
 
                 movieListToDisplay = response.body();
+
+                MainFragment fragmentToShow = MainFragment.newInstance(selectedPosition, movieListToDisplay);
+
                 getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.container, MainFragment.newInstance(selectedPosition, movieListToDisplay))
+                        .replace(R.id.container,fragmentToShow)
                         .commit();
                 progress.dismiss();
 
@@ -146,6 +154,10 @@ public class MainActivity extends BaseActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 // When the given dropdown item is selected, show its contents in the
                 // container view.
+                if (isFromRestore) {
+                    isFromRestore = false;
+                    return;
+                }
                 selectedPosition = position + 1;
                 if (selectedPosition == 1){
                     populateList(getApplicationContext().getString(R.string.sortByPopular));

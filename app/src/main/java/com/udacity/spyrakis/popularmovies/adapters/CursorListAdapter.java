@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 import com.udacity.spyrakis.popularmovies.R;
@@ -62,7 +63,20 @@ public class CursorListAdapter extends CursorAdapter {
 
         int imageIndex = cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_ICON);
         String image = cursor.getString(imageIndex);
-        Picasso.with(context).load(image).placeholder(R.drawable.placeholder).into(viewHolder.imageView);
+        Picasso.with(context).load(image).placeholder(R.drawable.placeholder).into(viewHolder.imageView, new com.squareup.picasso.Callback() {
+            @Override
+            public void onSuccess() {
+                //i don't have something to do
+            }
+
+            @Override
+            public void onError() {
+                Toast.makeText(mContext,
+                        mContext.getResources().getString(R.string.picasso_fail),
+                        Toast.LENGTH_SHORT)
+                        .show();
+            }
+        });
 
         int idIndex = cursor.getColumnIndex(MoviesContract.MovieEntry.MOVIE_ID);
         int id = Integer.valueOf(cursor.getString(idIndex));

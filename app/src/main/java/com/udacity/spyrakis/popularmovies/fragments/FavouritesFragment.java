@@ -37,6 +37,8 @@ public class FavouritesFragment extends Fragment implements LoaderManager.Loader
      * fragment.
      */
     private static final String ARG_SECTION_NUMBER = "section_number";
+    private static final String EXTRA_GRID_STATE = "EXTRA_GRID_STATE";
+
     private static final int CURSOR_LOADER_ID = 0;
     @BindView(R.id.favourites_list)
     GridView favouritesList;
@@ -87,6 +89,20 @@ public class FavouritesFragment extends Fragment implements LoaderManager.Loader
         favouritesList.setAdapter(adapter);
 
         return rootView;
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(EXTRA_GRID_STATE,favouritesList.onSaveInstanceState());
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if (savedInstanceState != null){
+            favouritesList.onRestoreInstanceState(savedInstanceState.getParcelable(EXTRA_GRID_STATE));
+        }
     }
 
     @NonNull

@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 import com.udacity.spyrakis.popularmovies.R;
@@ -80,7 +81,20 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
         String imagePath = context.getString(R.string.icons_base_url) + context.getString(R.string.icon_size_suggested) + movies.get(position).getPosterPath();
 
         holder.movie = movies.get(position);
-        Picasso.with(context).load(imagePath).placeholder(R.drawable.placeholder).into(holder.image);
+        Picasso.with(context).load(imagePath).placeholder(R.drawable.placeholder).into(holder.image, new com.squareup.picasso.Callback() {
+            @Override
+            public void onSuccess() {
+                //i don't have something to do
+            }
+
+            @Override
+            public void onError() {
+                Toast.makeText(context,
+                        context.getResources().getString(R.string.picasso_fail),
+                        Toast.LENGTH_SHORT)
+                        .show();
+            }
+        });
 
         holder.bind(movies.get(position).getId(), listener);
     }

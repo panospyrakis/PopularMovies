@@ -27,4 +27,7 @@
     <string name="mark_as_favourite">Mark As Favourite</string>
     <string name="marked_as_favourite">Marked As Favourite</string>
 
+    <string name="picasso_fail">Something Failed.Excuse us.</string>
+    <string name="picasso_success">Have Fun</string>
+
 </resources>

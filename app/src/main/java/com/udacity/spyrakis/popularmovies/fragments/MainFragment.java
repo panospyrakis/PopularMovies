@@ -6,6 +6,9 @@ package com.udacity.spyrakis.popularmovies.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -33,6 +36,7 @@ public class MainFragment extends Fragment {
      */
     private static final String ARG_SECTION_NUMBER = "section_number";
     private static final String ARG_MOVIE_LIST = "movie_list";
+    public static final String EXTRA_SCROLL_POSITION = "EXTRA_SCROLL_POSITION";
     @BindView(R.id.movie_List)
     RecyclerView listView;
 
@@ -73,5 +77,23 @@ public class MainFragment extends Fragment {
         listView.setAdapter(adapter);
 
         return rootView;
+    }
+    public void restoreState(Parcelable manager){
+        listView.getLayoutManager().onRestoreInstanceState(manager);
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(EXTRA_SCROLL_POSITION,listView.getLayoutManager().onSaveInstanceState());
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if (savedInstanceState != null){
+            Parcelable layoutManagerSavedState =  savedInstanceState.getParcelable(EXTRA_SCROLL_POSITION);
+            restoreState(layoutManagerSavedState);
+        }
     }
 }

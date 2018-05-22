@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 import com.udacity.spyrakis.popularmovies.R;
@@ -196,7 +197,21 @@ public class DetailsActivity extends BaseActivity{
         shortDescription.setText(movie.getOverview());
         imagePath = getApplicationContext().getString(R.string.icons_base_url) + getApplicationContext().getString(R.string.icon_size_suggested) + movie.getPosterPath();
 
-        Picasso.with(getApplicationContext()).load(imagePath).placeholder(R.drawable.placeholder).into(poster);
+        Picasso.with(getApplicationContext()).load(imagePath).placeholder(R.drawable.placeholder)
+                .into(poster, new com.squareup.picasso.Callback() {
+            @Override
+            public void onSuccess() {
+                //i don't have something to do
+            }
+
+            @Override
+            public void onError() {
+                Toast.makeText(getApplicationContext(),
+                        getApplicationContext().getResources().getString(R.string.picasso_fail),
+                        Toast.LENGTH_SHORT)
+                        .show();
+            }
+        });
 
         setUpTrailerList();
         setUpReviewsList();
